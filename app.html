@@ -49,6 +49,8 @@
                         throw new Error("No medications found for the selected patient");
                     }
                     return data.entry;
+                })
+                
                 // Render the current patient's medications (or any error)
                 .then(
                     function(meds) {
@@ -81,9 +83,6 @@
                     function(error) {
                         document.getElementById("obs").innerText = error.stack;
                     }
-                );
-
-            }).catch(console.error);
                 );
 
             }).catch(console.error);
