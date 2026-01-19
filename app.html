@@ -43,18 +43,14 @@
                     graph: true
                 })
                 
-                // Reject if no MedicationRequests are found
-                .then(function(data) {
-                    if (!data.entry || !data.entry.length) {
-                        throw new Error("No medications found for the selected patient");
-                    }
-                    return data.entry;
-                })
-                
                 // Render the current patient's medications (or any error)
                 .then(
-                    function(meds) {
-                        document.getElementById("meds").innerText = JSON.stringify(meds, null, 4);
+                    function(data) {
+                        if (!data.entry || !data.entry.length) {
+                            document.getElementById("meds").innerText = "No medications found for the selected patient";
+                        } else {
+                            document.getElementById("meds").innerText = JSON.stringify(data.entry, null, 4);
+                        }
                     },
                     function(error) {
                         document.getElementById("meds").innerText = error.stack;
@@ -67,18 +63,14 @@
                     graph: false
                 })
                 
-                // Reject if no Observations are found
-                .then(function(data) {
-                    if (!data.entry || !data.entry.length) {
-                        throw new Error("No observations found for the selected patient");
-                    }
-                    return data.entry;
-                })
-                
                 // Render the current patient's observations (or any error)
                 .then(
-                    function(observations) {
-                        document.getElementById("obs").innerText = JSON.stringify(observations, null, 4);
+                    function(data) {
+                        if (!data.entry || !data.entry.length) {
+                            document.getElementById("obs").innerText = "No observations found for the selected patient";
+                        } else {
+                            document.getElementById("obs").innerText = JSON.stringify(data.entry, null, 4);
+                        }
                     },
                     function(error) {
                         document.getElementById("obs").innerText = error.stack;
