@@ -102,14 +102,12 @@
                 );
 
                 // Get Observations for the selected patient
-                client.request("/Observation?patient=" + client.patient.id + "&_sort=-date&_count=10", {
-                    resolveReferences: ["performer"],
-                    graph: false
-                })
+                client.request("Observation?patient=" + client.patient.id + "&_sort=-date&_count=10")
                 
                 // Render the current patient's observations (or any error)
                 .then(
                     function(data) {
+                        console.log("Observations data:", data);
                         if (!data.entry || !data.entry.length) {
                             document.getElementById("obs").innerText = "No observations found for the selected patient";
                         } else {
