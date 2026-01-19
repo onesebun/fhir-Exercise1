@@ -5,7 +5,7 @@
         <title>Example SMART App</title>
         <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
         <style>
-            #patient, #meds {
+            #patient, #meds, #obs {
                 font-family: Monaco, monospace;
                 white-space: pre;
                 font-size: 13px;
@@ -21,6 +21,9 @@
         <br/>
         <h4>Medications</h4>
         <div id="meds">Loading...</div>
+        <br/>
+        <h4>Observations</h4>
+        <div id="obs">Loading...</div>
         <script type="text/javascript">
             FHIR.oauth2.ready().then(function(client) {
                 
@@ -46,9 +49,6 @@
                         throw new Error("No medications found for the selected patient");
                     }
                     return data.entry;
-                })
-                
-
                 // Render the current patient's medications (or any error)
                 .then(
                     function(meds) {
@@ -57,6 +57,33 @@
                     function(error) {
                         document.getElementById("meds").innerText = error.stack;
                     }
+                );
+
+                // Get Observations for the selected patient
+                client.request("/Observation?patient=" + client.patient.id + "&_sort=-date&_count=10", {
+                    resolveReferences: ["performer"],
+                    graph: false
+                })
+                
+                // Reject if no Observations are found
+                .then(function(data) {
+                    if (!data.entry || !data.entry.length) {
+                        throw new Error("No observations found for the selected patient");
+                    }
+                    return data.entry;
+                })
+                
+                // Render the current patient's observations (or any error)
+                .then(
+                    function(observations) {
+                        document.getElementById("obs").innerText = JSON.stringify(observations, null, 4);
+                    },
+                    function(error) {
+                        document.getElementById("obs").innerText = error.stack;
+                    }
+                );
+
+            }).catch(console.error);
                 );
 
             }).catch(console.error);
