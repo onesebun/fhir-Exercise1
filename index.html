@@ -1,65 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Example SMART App</title>
-        <script src="https://cdn.jsdelivr.net/npm/fhirclient/build/fhir-client.js"></script>
-        <style>
-            #patient, #meds {
-                font-family: Monaco, monospace;
-                white-space: pre;
-                font-size: 13px;
-                height: 30vh;
-                overflow: scroll;
-                border: 1px solid #CCC;
-            }
-        </style>
-    </head>
-    <body>
-        <h4>Current Patient</h4>
-        <div id="patient">Loading...</div>
-        <br/>
-        <h4>Medications</h4>
-        <div id="meds">Loading...</div>
-        <script type="text/javascript">
-            FHIR.oauth2.ready().then(function(client) {
-                
-                // Render the current patient (or any error)
-                client.patient.read().then(
-                    function(pt) {
-                        document.getElementById("patient").innerText = JSON.stringify(pt, null, 4);
-                    },
-                    function(error) {
-                        document.getElementById("patient").innerText = error.stack;
-                    }
-                );
-                
-                // Get MedicationRequests for the selected patient
-                client.request("/MedicationRequest?patient=" + client.patient.id, {
-                    resolveReferences: [ "medicationReference" ],
-                    graph: true
-                })
-                
-                // Reject if no MedicationRequests are found
-                .then(function(data) {
-                    if (!data.entry || !data.entry.length) {
-                        throw new Error("No medications found for the selected patient");
-                    }
-                    return data.entry;
-                })
-                
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FHIR SMART App - Welcome</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background: #f5f5f5;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #0066cc;
+            padding-bottom: 10px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #0066cc;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 10px 10px 10px 0;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #0052a3;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: Monaco, monospace;
+        }
+        ol {
+            margin-left: 20px;
+        }
+        li {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏥 FHIR SMART App</h1>
+        
+        <div class="warning">
+            <strong>⚠️ 重要提醒：</strong><br>
+            此應用程式是 SMART on FHIR 應用程式，不能直接訪問 <code>launch.html</code> 或 <code>index.html</code>。
+            必須通過 SMART Launcher 啟動。
+        </div>
 
-                // Render the current patient's medications (or any error)
-                .then(
-                    function(meds) {
-                        document.getElementById("meds").innerText = JSON.stringify(meds, null, 4);
-                    },
-                    function(error) {
-                        document.getElementById("meds").innerText = error.stack;
-                    }
-                );
+        <h2>如何啟動應用程式</h2>
 
-            }).catch(console.error);
-        </script>
-    </body>
+        <div class="info">
+            <h3>方法 1: 使用 SMART Launcher（推薦）</h3>
+            <ol>
+                <li>點擊下方按鈕前往 SMART Launcher</li>
+                <li>在 "App Launch URL" 欄位輸入：<br>
+                    <code>https://onesebun.github.io/fhir-Exercise1/launch.html</code>
+                </li>
+                <li>選擇測試病患和提供者</li>
+                <li>點擊 "Launch" 按鈕啟動應用程式</li>
+            </ol>
+            <a href="http://launch.smarthealthit.org/" target="_blank" class="button">
+                開啟 SMART Launcher
+            </a>
+        </div>
+
+        <div class="info">
+            <h3>方法 2: 快速啟動連結（僅本地開發）</h3>
+            <p>如果您在本地運行此應用程式 (http://127.0.0.1:8080)，可以使用：</p>
+            <a href="http://127.0.0.1:8080/launch.html?launch=eyJhIjoiMSJ9&iss=https%3A%2F%2Flaunch.smarthealthit.org%2Fv%2Fr4%2Ffhir" class="button">
+                本地快速啟動
+            </a>
+        </div>
+
+        <h2>關於此應用程式</h2>
+        <p>這是一個範例 SMART on FHIR JavaScript 應用程式，展示了：</p>
+        <ul>
+            <li>✅ EHR Launch Flow (啟動流程)</li>
+            <li>✅ OAuth2 授權</li>
+            <li>✅ 讀取病患資料</li>
+            <li>✅ 查詢藥物處方</li>
+        </ul>
+
+        <h2>技術文件</h2>
+        <p>
+            <a href="https://docs.smarthealthit.org/tutorials/javascript/" target="_blank">
+                SMART on FHIR JavaScript Tutorial
+            </a>
+        </p>
+    </div>
+
+    <script>
+        // 檢測是否有 launch 參數，如果有則重定向到 launch.html
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('launch') && urlParams.has('iss')) {
+            window.location.href = 'launch.html' + window.location.search;
+        }
+    </script>
+</body>
 </html>
